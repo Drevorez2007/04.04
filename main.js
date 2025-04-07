@@ -3,7 +3,6 @@ const autocompleteList = document.getElementById('autocomplete-list');
 const selectedReposList = document.getElementById('selected-repos-list');
 let debounceTimer;
 
-
 async function fetchRepositories(query) {
     if (!query) return [];
 
@@ -17,13 +16,6 @@ async function fetchRepositories(query) {
     }
 }
 
-
-function debounce(func, delay) {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(func, delay);
-}
-
-
 searchInput.addEventListener('input', () => {
     const query = searchInput.value.trim();
 
@@ -32,14 +24,16 @@ searchInput.addEventListener('input', () => {
         return;
     }
 
-    debounce(() => {
+   
+    clearTimeout(debounceTimer);  
+    debounceTimer = setTimeout(() => {
         fetchRepositories(query).then(repositories => {
             if (repositories.length === 0) {
-                autocompleteList.innerHTML = ''; 
+                autocompleteList.innerHTML = '';  
                 return;
             }
             
-            autocompleteList.innerHTML = ''; 
+            autocompleteList.innerHTML = '';  
             repositories.forEach(repo => {
                 const listItem = document.createElement('li');
                 listItem.textContent = repo.name;
@@ -49,7 +43,7 @@ searchInput.addEventListener('input', () => {
                 autocompleteList.appendChild(listItem);
             });
         });
-    }, 2000); 
+    }, 2000);  
 });
 
 function addRepository(repo) {
