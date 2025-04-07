@@ -34,6 +34,11 @@ searchInput.addEventListener('input', () => {
 
     debounce(() => {
         fetchRepositories(query).then(repositories => {
+            if (repositories.length === 0) {
+                autocompleteList.innerHTML = ''; 
+                return;
+            }
+            
             autocompleteList.innerHTML = ''; 
             repositories.forEach(repo => {
                 const listItem = document.createElement('li');
@@ -44,7 +49,7 @@ searchInput.addEventListener('input', () => {
                 autocompleteList.appendChild(listItem);
             });
         });
-    }, 300); 
+    }, 2000); 
 });
 
 function addRepository(repo) {
