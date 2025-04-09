@@ -1,63 +1,83 @@
 const searchInput = document.getElementById('search-input');
 const autocompleteList = document.getElementById('autocomplete-list');
 const selectedReposList = document.getElementById('selected-repos-list');
+
 let debounceTimer;
 
 async function fetchRepositories(query) {
-    if (!query) return [];
+  if (!query) return [];
 
-    try {
-        const response = await fetch(`https://api.github.com/search/repositories?q=${query}&sort=stars&order=desc`);
-        const data = await response.json();
-        return data.items.slice(0, 5); 
-    } catch (error) {
-        console.error('Ошибка при запросе данных с GitHub:', error);
-        return [];
-    }
+  try {
+    const response = await fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&order=desc`);
+    const data = await response.json();
+    return data.items.slice(0, 5);
+  } catch (error) {
+    console.error('Ошибка при запросе данных с GitHub:', error);
+    return [];
+  }
 }
+
 
 searchInput.addEventListener('input', () => {
-    const query = searchInput.value.trim();
+  const query = searchInput.value.trim();
 
-    if (!query) {
-        autocompleteList.innerHTML = ''; 
-        return;
-    }
+  if (!query) {
+    clearAutocomplete();
+    return;
+  }
 
-   
-    clearTimeout(debounceTimer);  
-    debounceTimer = setTimeout(() => {
-        fetchRepositories(query).then(repositories => {
-            if (repositories.length === 0) {
-                autocompleteList.innerHTML = '';  
-                return;
-            }
-            
-            autocompleteList.innerHTML = '';  
-            repositories.forEach(repo => {
-                const listItem = document.createElement('li');
-                listItem.textContent = repo.name;
-                listItem.addEventListener('click', () => {
-                    addRepository(repo);
-                });
-                autocompleteList.appendChild(listItem);
-            });
-        });
-    }, 2000);  
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    fetchRepositories(query).then(repositories => {
+      updateAutocomplete(repositories);
+    });
+  }, 5000); 
 });
 
-function addRepository(repo) {
-    const listItem = document.createElement('li');
-    listItem.innerHTML = `
-        ${repo.name} - ${repo.owner.login} - ${repo.stargazers_count} звезд
-        <button onclick="removeRepository(this)">Удалить</button>
-    `;
-    selectedReposList.appendChild(listItem);
-    searchInput.value = ''; 
-    autocompleteList.innerHTML = ''; 
+
+function clearAutocomplete() {
+  autocompleteList.innerHTML = '';
 }
 
-function removeRepository(button) {
-    const listItem = button.parentElement;
-    selectedReposList.removeChild(listItem);
+
+function updateAutocomplete(repositories) {
+  clearAutocomplete();
+
+  repositories.forEach(repo => {
+    const item = document.createElement('li');
+    item.textContent = repo.name;
+    item.classList.add('autocomplete-item');
+
+    item.addEventListener('click', () => {
+      addRepository(repo);
+      clearAutocomplete();
+      searchInput.value = '';
+    });
+
+    autocompleteList.appendChild(item);
+  });
+}
+
+function addRepository(repo) {
+  const listItem = document.createElement('li');
+  listItem.classList.add('repo-item');
+
+  const info = document.createElement('div');
+  info.innerHTML = `
+    <strong>${repo.name}</strong> <br>
+    Владелец: ${repo.owner.login} <br>
+    ⭐ ${repo.stargazers_count}
+  `;
+
+  const removeBtn = document.createElement('button');
+  removeBtn.textContent = 'Удалить';
+  removeBtn.classList.add('remove-btn');
+  removeBtn.addEventListener('click', () => {
+    listItem.remove();
+  });
+
+  listItem.appendChild(info);
+  listItem.appendChild(removeBtn);
+
+  selectedReposList.appendChild(listItem);
 }

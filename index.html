@@ -1,19 +1,46 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Repo Search</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="main.css" />
+  <title>GitHub Repo Search</title>
 </head>
 <body>
 
-    <div class="app">
-        <input type="text" id="search-input" placeholder="Поиск репозиториев..." class="input" />
-        <ul id="autocomplete-list" class="autocomplete-list"></ul>
-        <ul id="selected-repos-list" class="repos-list"></ul>
-    </div>
+  <div class="app">
 
-    <script src="main.js"></script>
 
+    <header class="app-header">
+      <h1>Поиск репозиториев на GitHub</h1>
+      <p class="subheading">Введите название и выберите нужный репозиторий из выпадающего списка</p>
+    </header>
+
+
+    <section class="search-section">
+      <label for="search-input" class="search-label">Поиск:</label>
+      <input 
+        type="text" 
+        id="search-input" 
+        placeholder="Например: react, vue, express..." 
+        class="input" 
+        autocomplete="off" 
+      />
+
+   
+      <ul id="autocomplete-list" class="autocomplete-list"></ul>
+    </section>
+
+
+    <section class="results-section">
+      <h2>Выбранные репозитории</h2>
+      <ul id="selected-repos-list" class="repos-list">
+   
+      </ul>
+    </section>
+
+  </div>
+
+  <script src="main.js"></script>
 </body>
 </html>
